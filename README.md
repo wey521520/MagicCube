@@ -1,0 +1,2 @@
+# MagicCube
+personal game

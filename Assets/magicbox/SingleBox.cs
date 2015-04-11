@@ -93,10 +93,10 @@ public class SingleBox : MonoBehaviour
 		SingleBoxPiece[] mypieces = GetComponentsInChildren <SingleBoxPiece> ();
 		cubecolor.Clear ();
 		foreach (SingleBoxPiece p in mypieces) {
-			if (p.isActiveAndEnabled) {
-				p.GetComponent <MeshRenderer> ().material.color = Color.gray;
-				cubecolor.Add (p.gameObject, MagicColor.None);
-			}
+//			if (p.isActiveAndEnabled) {
+			p.GetComponent <MeshRenderer> ().material.color = Color.gray;
+			cubecolor.Add (p.gameObject, MagicColor.None);
+//			}
 		}
 	}
 
@@ -116,10 +116,10 @@ public class SingleBox : MonoBehaviour
 							break;
 						}
 						int index = (int)curcolor;
-						if (index > 3 && (int)cubecolor [g] == index - 3) {
+						if (index >= 3 && (int)cubecolor [g] == index - 3) {
 							cansetcolor = false;
 							break;
-						} else if (index <= 3 && (int)cubecolor [g] == index + 3) {
+						} else if (index < 3 && (int)cubecolor [g] == index + 3) {
 							cansetcolor = false;
 							break;
 						}

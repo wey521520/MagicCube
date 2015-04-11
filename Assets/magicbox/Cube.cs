@@ -84,6 +84,10 @@ public class Cube : MonoBehaviour
 
 	public void SetFullColor ()
 	{
+		SingleBox[] boxes = FindObjectsOfType <SingleBox> ();
+		foreach (SingleBox b in boxes) {
+			b.InitColor ();
+		}
 		// 设置初始颜色
 		MagicCubeOperate opetarer = FindObjectOfType <MagicCubeOperate> ();
 		SingleBoxPiece[] pieces = FindObjectsOfType <SingleBoxPiece> ();

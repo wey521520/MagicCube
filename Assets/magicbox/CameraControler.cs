@@ -5,7 +5,7 @@ using UnityEngine.SocialPlatforms.Impl;
 public class CameraControler : MonoBehaviour
 {
 
-	//	public Camera mycam;
+	// public Camera mycam;
 	// Use this for initialization
 
 	public Camera MainCamera;

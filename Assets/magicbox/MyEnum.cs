@@ -3,33 +3,33 @@ using System.Collections;
 
 public enum OperateStep
 {
-	L,
-	L0,
+	L = 0,
 	L2,
+	L0,
 	R,
-	R0,
 	R2,
+	R0,
 	U,
-	U0,
 	U2,
+	U0,
 	D,
-	D0,
 	D2,
+	D0,
 	F,
-	F0,
 	F2,
+	F0,
 	B,
-	B0,
 	B2,
+	B0,
 	X,
-	X0,
 	X2,
+	X0,
 	Y,
-	Y0,
 	Y2,
+	Y0,
 	Z,
-	Z0,
-	Z2
+	Z2,
+	Z0
 }
 
 public enum OperateSuit

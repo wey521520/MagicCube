@@ -17,7 +17,7 @@ public class MagicCubeOperate : MonoBehaviour
 
 	private bool judged;
 
-	private const float singleanitime = 0.4f;
+	public  float singleanitime = 0.4f;
 	private float rlength;
 
 	private GameObject curobj;
@@ -679,17 +679,24 @@ public class MagicCubeOperate : MonoBehaviour
 		float t = 0f;
 		float o = 0f;
 		float lt = 0f;
-		float s = angle / length;
-		while (t < length) {
-			t += Time.deltaTime;
-			if (t > length) {
-				t = length;
+		if (length > 0f) {
+			float s = angle / length;
+			while (t < length) {
+				t += Time.deltaTime;
+				if (t > length) {
+					t = length;
+				}
+				o = (t - lt) * s;
+				foreach (SingleBox b in olist) {
+					b.transform.RotateAround (point, axis, o);
+				}
+				lt = t;
+				yield return null;
 			}
-			o = (t - lt) * s;
+		} else {
 			foreach (SingleBox b in olist) {
-				b.transform.RotateAround (point, axis, o);
+				b.transform.RotateAround (point, axis, angle);
 			}
-			lt = t;
 			yield return null;
 		}
 		// 或许可以不需要

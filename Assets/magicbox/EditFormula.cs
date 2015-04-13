@@ -82,14 +82,31 @@ public class EditFormula : MonoBehaviour
 				char[] charSeparator = new char[] { ',' };
 				string[] l = formula.Split (charSeparator, System.StringSplitOptions.RemoveEmptyEntries);
 
-				int sn = (int)GetString2Step (l [l.Length - 1]);
+				// 获得上一步存储的步骤序号
+				int ps = (int)GetString2Step (l [l.Length - 1]);
+				int cs = (int)onestep;
 
 				// TODO: 检查新步骤是否与上一步骤有冲突，进行公式合并。
-
-				formula += "," + stepmap [onestep];
+				if ((cs / 3) == (ps / 3)) {
+					Delete ();
+					if ((cs % 3) == (ps % 3)) {
+						if (cs % 3 == 0) { // 相加等于2
+							Add ((OperateStep)(cs + 1));
+						} else if (cs % 3 == 2) {
+							Add ((OperateStep)(cs - 1));
+						}
+					} else {
+						if (cs % 3 == 1) {
+							Add ((OperateStep)(cs * 2 - ps));
+						} else if (ps % 3 == 1) {
+							Add ((OperateStep)(ps * 2 - cs));
+						}
+					}
+				} else {
+					formula += "," + stepmap [onestep];
+				}
 			}
 		}
-		//print (formula);
 		formulatext.text = formula;
 	}
 

@@ -20,7 +20,7 @@ public class MagicCubeOperate : MonoBehaviour
 	public  float singleanitime = 0.4f;
 	private float rlength;
 
-	private GameObject curobj;
+	//	private GameObject curobj;
 	private float rollangle;
 
 	public EditFormula editmyformula;
@@ -501,7 +501,7 @@ public class MagicCubeOperate : MonoBehaviour
 
 	public void ManualOperate (OperatePiece piece, Vector3 pos, GameObject singleboxobj)
 	{
-		curobj = singleboxobj;
+//		curobj = singleboxobj;
 		StartCoroutine (DoJudge (piece, pos));
 	}
 
@@ -636,9 +636,9 @@ public class MagicCubeOperate : MonoBehaviour
 		//print ("<|||||>" + offsetangle + "<|||||>" + targetangle + "<|||||>" + rollangle);
 
 		float speed = 90f / singleanitime;
-		bool toupper = true;
+//		bool toupper = true;
 		if (offsetangle < 0) {
-			toupper = false;
+//			toupper = false;
 			speed *= -1f;
 		}
 

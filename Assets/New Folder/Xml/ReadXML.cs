@@ -780,7 +780,7 @@ public class ReadXML : MonoBehaviour
 			try {
 				result = float.Parse (message);
 			} catch (Exception e) {
-				Utils.warning ("invalid number format: {0}", message);
+				Utils.warning ("invalid number format: {0}{1}", message, e.ToString ());
 			}
 		}
 		return result;

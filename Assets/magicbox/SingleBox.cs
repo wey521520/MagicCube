@@ -5,9 +5,6 @@ using System.Collections.Generic;
 
 public class SingleBox : MonoBehaviour
 {
-	//	List<Transform> mytrans = new List<Transform> ();
-	//	Transform[] mytrans = new Transform[0];
-
 	public Dictionary<GameObject,MagicColor> cubecolor = new Dictionary<GameObject, MagicColor> ();
 
 	public CubeStyle myStyle = CubeStyle.None;
@@ -26,18 +23,6 @@ public class SingleBox : MonoBehaviour
 		transform.position = AdjustPositionValue (transform.position);
 		transform.eulerAngles = AdjustAngleValue (transform.eulerAngles);
 	}
-
-	//		if (mytrans.Length < 1) {
-	//			FindTran ();
-	//		}
-	//		foreach (Transform t in mytrans) {
-	//			t.position = AdjustPositionValue (t.position);
-	//			t.eulerAngles = AdjustAngleValue (t.eulerAngles);
-	//		}
-	//	void FindTran ()
-	//	{
-	//		mytrans = FindObjectsOfType <Transform> ();
-	//	}
 
 	#region tools for adjust
 
@@ -93,10 +78,8 @@ public class SingleBox : MonoBehaviour
 		SingleBoxPiece[] mypieces = GetComponentsInChildren <SingleBoxPiece> ();
 		cubecolor.Clear ();
 		foreach (SingleBoxPiece p in mypieces) {
-//			if (p.isActiveAndEnabled) {
 			p.GetComponent <MeshRenderer> ().material.color = Color.gray;
 			cubecolor.Add (p.gameObject, MagicColor.None);
-//			}
 		}
 	}
 

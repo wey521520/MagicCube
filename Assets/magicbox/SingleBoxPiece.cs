@@ -20,19 +20,18 @@ public class SingleBoxPiece : MonoBehaviour
 		}
 		switch (operater.mystate) {
 		case State.Operate:
-			if (!operater.Stop) {
-				print ("Can not operate!");
-			}
+			if (operater.Stop) {
 				//print ("Current face pos :" + this.transform.position);
-			if (this.transform.position.x <= (-1.25f)) {
-				operater.ManualOperate (OperatePiece.Left, 
-					this.transform.position, this.transform.parent.gameObject);
-			} else if (this.transform.position.y >= (1.25f)) {
-				operater.ManualOperate (OperatePiece.Top, 
-					this.transform.position, this.transform.parent.gameObject);
-			} else if (this.transform.position.z <= (-1.25f)) {
-				operater.ManualOperate (OperatePiece.Right, 
-					this.transform.position, this.transform.parent.gameObject);
+				if (this.transform.position.x <= (-1.25f)) {
+					operater.ManualOperate (OperatePiece.Left, 
+						this.transform.position, this.transform.parent.gameObject);
+				} else if (this.transform.position.y >= (1.25f)) {
+					operater.ManualOperate (OperatePiece.Top, 
+						this.transform.position, this.transform.parent.gameObject);
+				} else if (this.transform.position.z <= (-1.25f)) {
+					operater.ManualOperate (OperatePiece.Right, 
+						this.transform.position, this.transform.parent.gameObject);
+				}
 			}
 			break;																																																																																																																																																																																																																																																																								
 		case State.EditColor:

@@ -31,29 +31,29 @@ public class Global : MonoBehaviour
 
 	//	public string appVersionFile;
 
-	private static JsonData SimpleDataStore = new JsonData ();
-	private static bool isSimpleDataStoreDirty = false;
-	private static string filename = "DataStore";
+	//	private static JsonData SimpleDataStore = new JsonData ();
+	//	private static bool isSimpleDataStoreDirty = false;
+	//	private static string filename = "DataStore";
 
 	void Awake ()
 	{
 		DontDestroyOnLoad (this);
 		init ();
 
-		//Compose db path
-		switch (Global.SystemType) {
-		case Global.SysType.OS_ANDROID:
-		case Global.SysType.OS_IOS:
-			filename = string.Format ("{0}/{1}", Application.persistentDataPath, filename);
-			break;
-		case Global.SysType.OS_MACOSX:
-		case Global.SysType.OS_LINUX:
-		case Global.SysType.OS_WINDOWS:
-			filename = string.Format ("{0}/{1}", Application.dataPath, filename);
-			break;
-		default:
-			break;
-		}
+//		//Compose db path
+//		switch (Global.SystemType) {
+//		case Global.SysType.OS_ANDROID:
+//		case Global.SysType.OS_IOS:
+//			filename = string.Format ("{0}/{1}", Application.persistentDataPath, filename);
+//			break;
+//		case Global.SysType.OS_MACOSX:
+//		case Global.SysType.OS_LINUX:
+//		case Global.SysType.OS_WINDOWS:
+//			filename = string.Format ("{0}/{1}", Application.dataPath, filename);
+//			break;
+//		default:
+//			break;
+//		}
 //
 //		if (!Utils.isFileExisting (filename)) {
 //			Utils.writeFile (filename, "{}");

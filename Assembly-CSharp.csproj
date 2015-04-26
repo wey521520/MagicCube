@@ -5,7 +5,7 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{CC8CDA46-695E-7B21-B1B8-2B2250D04852}</ProjectGuid>
+	<ProjectGuid>{3E6B6720-9C1A-6ADE-82B3-3F74ED213E67}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
@@ -19,7 +19,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>Temp\bin\Debug\</OutputPath>
-	<DefineConstants>DEBUG;TRACE;UNITY_5_0_0;UNITY_5_0;UNITY_5;ENABLE_LICENSE_RENAME;ENABLE_NEW_BUGREPORTER;ENABLE_2D_PHYSICS;ENABLE_4_6_FEATURES;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_FRAME_DEBUGGER;ENABLE_GENERICS;ENABLE_HOME_SCREEN;ENABLE_IMAGEEFFECTS;ENABLE_LIGHT_PROBES_LEGACY;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_NEW_HIERARCHY;ENABLE_PHYSICS;ENABLE_PHYSICS_PHYSX3;ENABLE_PLUGIN_INSPECTOR;ENABLE_SHADOWS;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_AUDIOMIXER_SUSPEND;ENABLE_NONPRO;INCLUDE_DYNAMIC_GI;INCLUDE_GI;INCLUDE_IL2CPP;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;UNITY_STANDALONE_OSX;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_TEXTUREID_MAP;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_MONO;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX</DefineConstants>
+	<DefineConstants>DEBUG;TRACE;UNITY_5_0_1;UNITY_5_0;UNITY_5;ENABLE_LICENSE_RENAME;ENABLE_NEW_BUGREPORTER;ENABLE_2D_PHYSICS;ENABLE_4_6_FEATURES;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_FRAME_DEBUGGER;ENABLE_GENERICS;ENABLE_HOME_SCREEN;ENABLE_IMAGEEFFECTS;ENABLE_LIGHT_PROBES_LEGACY;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_NEW_HIERARCHY;ENABLE_PHYSICS;ENABLE_PHYSICS_PHYSX3;ENABLE_PLUGIN_INSPECTOR;ENABLE_SHADOWS;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_AUDIOMIXER_SUSPEND;ENABLE_NONPRO;INCLUDE_DYNAMIC_GI;INCLUDE_GI;INCLUDE_IL2CPP;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;UNITY_STANDALONE_OSX;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_TEXTUREID_MAP;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_MONO;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<NoWarn>0169</NoWarn>
@@ -47,44 +47,58 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\AnimationHolder.cs" />
-     <Compile Include="Assets\New Folder\Xml\BFEventHandler.cs" />
-     <Compile Include="Assets\New Folder\Xml\BaseFrame.cs" />
-     <Compile Include="Assets\New Folder\Xml\BaseFrameEvent.cs" />
-     <Compile Include="Assets\New Folder\Xml\BaseFrameForUI.cs" />
-     <Compile Include="Assets\New Folder\Xml\CustomerDefinedStyle.cs" />
-     <Compile Include="Assets\New Folder\Xml\CustomerPropertyBinder.cs" />
-     <Compile Include="Assets\New Folder\Xml\Global.cs" />
-     <Compile Include="Assets\New Folder\Xml\ReadXML.cs" />
-     <Compile Include="Assets\New Folder\Xml\Utils.cs" />
-     <Compile Include="Assets\magicbox\ButtonClick.cs" />
-     <Compile Include="Assets\magicbox\CameraControler.cs" />
-     <Compile Include="Assets\magicbox\ColorPicker.cs" />
-     <Compile Include="Assets\magicbox\Cube.cs" />
-     <Compile Include="Assets\magicbox\Distribute.cs" />
-     <Compile Include="Assets\magicbox\EditFormula.cs" />
-     <Compile Include="Assets\magicbox\MagicCubeColor.cs" />
-     <Compile Include="Assets\magicbox\MagicCubeOperate.cs" />
      <Compile Include="Assets\magicbox\MirrorReflection\MirrorReflection.cs" />
-     <Compile Include="Assets\magicbox\MyEnum.cs" />
-     <Compile Include="Assets\magicbox\SingleBox.cs" />
-     <Compile Include="Assets\magicbox\SingleBoxPiece.cs" />
+     <Compile Include="Assets\magicbox\NewScript\CubeFace.cs" />
+     <Compile Include="Assets\magicbox\NewScript\MyMagicCube.cs" />
+     <Compile Include="Assets\magicbox\NewScript\SingleCube.cs" />
+     <Compile Include="Assets\magicbox\Script\ButtonClick.cs" />
+     <Compile Include="Assets\magicbox\Script\CameraControler.cs" />
+     <Compile Include="Assets\magicbox\Script\ColorPicker.cs" />
+     <Compile Include="Assets\magicbox\Script\Cube.cs" />
+     <Compile Include="Assets\magicbox\Script\Distribute.cs" />
+     <Compile Include="Assets\magicbox\Script\EditFormula.cs" />
+     <Compile Include="Assets\magicbox\Script\MagicCubeOperate.cs" />
+     <Compile Include="Assets\magicbox\Script\MyEnum.cs" />
+     <Compile Include="Assets\magicbox\Script\MyMapPrefab.cs" />
+     <Compile Include="Assets\magicbox\Script\SingleBox.cs" />
+     <Compile Include="Assets\magicbox\Script\SingleBoxPiece.cs" />
+     <None Include="Assets\Plugins\Android\res\drawable\skyblue_platform_list_item.xml" />
+     <None Include="Assets\Plugins\Android\res\layout\skyblue_share_platform_list.xml" />
+     <None Include="Assets\Plugins\Android\res\values\ssdk_strings.xml" />
+     <None Include="Assets\Plugins\Android\res\values\oks_strings.xml" />
+     <None Include="Assets\Plugins\Android\res\drawable-xhdpi\ssdk_oks_shake_to_share_back.xml" />
+     <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
+     <None Include="Assets\Plugins\Android\res\values-en\ssdk_strings.xml" />
+     <None Include="Assets\Plugins\Android\res\layout\skyblue_share_platform_list_item.xml" />
      <None Include="Assets\Plugins\GoKit\easing\easeEquationsLicense.txt" />
+     <None Include="Assets\Plugins\Android\res\drawable\skyblue_platform_list_selector.xml" />
      <None Include="Assets\magicbox\aaa 3.txt" />
      <None Include="Assets\magicbox\aaa.txt" />
-     <None Include="Assets\New Folder\new.xml" />
+     <None Include="Assets\Plugins\Android\res\drawable\skyblue_platform_list_item_selected.xml" />
+     <None Include="Assets\Plugins\Android\res\layout\skyblue_editpage_inc_image_layout.xml" />
      <None Include="Assets\magicbox\aaa 2.txt" />
      <None Include="Assets\magicbox\aaa 1.txt" />
+     <None Include="Assets\Plugins\Android\res\layout\skyblue_share_actionbar.xml" />
+     <None Include="Assets\Plugins\Android\res\layout\skyblue_editpage.xml" />
+     <None Include="Assets\Plugins\Android\res\drawable\classic_platform_corners_bg.xml" />
+     <None Include="Assets\Plugins\Android\res\values-en\oks_strings.xml" />
+     <None Include="Assets\Plugins\Android\assets\ShareSDK.xml" />
+     <None Include="Assets\Plugins\Android\res\layout\skyblue_editpage_at_layout.xml" />
+     <None Include="Assets\Plugins\Android\res\values\instapaper_strings.xml" />
      <None Include="Assets\magicbox\MirrorReflection\MirrorReflection.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="LitJson">
- <HintPath>/Users/wueryuan/code/MagicCube/Assets/Plugins/LitJson.dll</HintPath>
+ <HintPath>/Users/wueryuan/code/magiccube/Assets/Plugins/LitJson.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.iOS.Extensions.Xcode">
+ <HintPath>/Applications/Unity/Unity.app/Contents/PlaybackEngines/iossupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{246C16BB-613D-786D-741A-38F2E7A04A71}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
+      <Project>{45B98172-C2EA-1F76-76A6-1335C6EC955F}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

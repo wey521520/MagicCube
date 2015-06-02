@@ -4,13 +4,15 @@ using UnityEngine.UI;
 public class ButtonClick : MonoBehaviour
 {
 	public OperateStep mystep;
-	private MagicCubeOperate operater;
-	private EditFormula editor;
+	//	private MagicCubeOperate operater;
+	private MyMagicCube operater;
+	//	private EditFormula editor;
 
 	void Start ()
 	{
-		operater = FindObjectOfType <MagicCubeOperate> ();
-		editor = FindObjectOfType<EditFormula> ();
+//		operater = FindObjectOfType <MagicCubeOperate> ();
+		operater = FindObjectOfType <MyMagicCube> ();
+//		editor = FindObjectOfType<EditFormula> ();
 		GetComponent <Button> ().onClick.AddListener (OnClick);
 	}
 
@@ -21,11 +23,13 @@ public class ButtonClick : MonoBehaviour
 			operater.DoSingleStep (mystep);
 			break;
 		case State.EditFormula:
-			editor.Add (mystep);
+//			editor.Add (mystep);
+			operater.FormularAdd (mystep);
 			break;
 		case State.OperateAndFormula:
 			operater.DoSingleStep (mystep);
-			editor.Add (mystep);
+			operater.FormularAdd (mystep);
+//			editor.Add (mystep);
 			break;
 		case State.EditColor:
 			operater.DoSingleStep (mystep);

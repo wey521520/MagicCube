@@ -50,10 +50,10 @@ public class MyMapPrefab : MonoBehaviour
 
 		ColorMap.Add (MagicColor.White, new Color32 (255, 255, 255, 255));
 		ColorMap.Add (MagicColor.Red, new Color32 (254, 5, 0, 255));
-		ColorMap.Add (MagicColor.Blue, new Color32 (9, 3, 255, 255));
+		ColorMap.Add (MagicColor.Green, new Color32 (12, 255, 2, 255));
 		ColorMap.Add (MagicColor.Yellow, new Color32 (255, 255, 0, 255));
 		ColorMap.Add (MagicColor.Orange, new Color32 (255, 102, 0, 255));
-		ColorMap.Add (MagicColor.Green, new Color32 (12, 255, 2, 255));
+		ColorMap.Add (MagicColor.Blue, new Color32 (9, 3, 255, 255));
 		ColorMap.Add (MagicColor.None, new Color32 (128, 128, 128, 255));
 
 		StyleColorMap.Add (CubeFaceStyle.Up, MagicColor.Yellow);

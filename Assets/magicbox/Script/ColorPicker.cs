@@ -6,11 +6,13 @@ public class ColorPicker : MonoBehaviour
 {
 
 	public MagicColor mycolor;
-	private MagicCubeOperate operater;
+	//	private MagicCubeOperate operater;
+	private MyMagicCube operater;
 
 	void Start ()
 	{
-		operater = FindObjectOfType <MagicCubeOperate> ();
+		//		operater = FindObjectOfType <MagicCubeOperate> ();
+		operater = FindObjectOfType <MyMagicCube> ();
 		GetComponent <Button> ().onClick.AddListener (OnClick);
 	}
 

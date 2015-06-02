@@ -114,6 +114,37 @@ public enum SingleCubeLocation
 	None
 }
 
+public enum CubeMark
+{
+	WRB,
+	WRG,
+	WBO,
+	WOG,
+	YRB,
+	YRG,
+	YBO,
+	YOG,
+	WR,
+	WB,
+	WO,
+	WG,
+	YB,
+	YG,
+	YR,
+	YO,
+	BR,
+	BO,
+	GR,
+	GO,
+	W,
+	R,
+	B,
+	Y,
+	O,
+	G,
+	None
+}
+
 public enum CubeStyle
 {
 	Corner,

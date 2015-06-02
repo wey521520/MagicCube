@@ -32,25 +32,46 @@ public class MyMagicCube : MonoBehaviour
 	public  float singleanitime = 0.4f;
 	private float rlength;
 
+	List<SingleCube> operatelist = new List<SingleCube> ();
+
+	#endregion
+
+	#region Edit Cube Color
+
 	// 当前编辑所选中的颜色
 	private MagicColor curColor = MagicColor.White;
 
 	public MagicColor Color { get { return curColor; } }
 
-	List<SingleCube> operatelist = new List<SingleCube> ();
+	public Dictionary<SingleCube,CubeMark> EditColorMap = new Dictionary<SingleCube, CubeMark> ();
+	public Dictionary<MagicColor,int> EditColorStore = new Dictionary<MagicColor, int> ();
 
 	#endregion
 
+	#region accomplish
 
+	public Dictionary<CubeFaceStyle,MagicColor> accomplishstate = new Dictionary<CubeFaceStyle, MagicColor> ();
+
+	#endregion
 
 	void Start ()
 	{
 		CreatCube ();
 		rlength = 180f / Screen.width / 0.23f / 3.14f;
 
+		EditColorStore.Add (MagicColor.White, 0);
+		EditColorStore.Add (MagicColor.Red, 0);
+		EditColorStore.Add (MagicColor.Yellow, 0);
+		EditColorStore.Add (MagicColor.Green, 0);
+		EditColorStore.Add (MagicColor.Blue, 0);
+		EditColorStore.Add (MagicColor.Orange, 0);
+		EditColorStore.Add (MagicColor.None, 0);
+
+		StartCoroutine (SetFullColor ());
 	}
 
-	// creat
+	#region creat
+
 	void CreatCube ()
 	{
 		if (CubePrefab == null || FacePrefab == null) {
@@ -64,7 +85,7 @@ public class MyMagicCube : MonoBehaviour
 			obj.transform.SetParent (this.transform);
 			obj.transform.localScale = Vector3.one * singlecubesize * 0.99f;
 			obj.transform.position = new Vector3 ((i % 9) / 3 - 1, i / 9 - 1, i % 3 - 1) * singlecubesize;
-			obj.name = "Cube" + i.ToString ("D2");
+			obj.name = "Cube" + i.ToString ("D2") + obj.transform.position;
 
 			SingleCube cube = obj.GetComponent <SingleCube> ();
 			singlecubes [i] = cube;
@@ -81,10 +102,10 @@ public class MyMagicCube : MonoBehaviour
 			case 20:
 			case 24:
 			case 26:
-				cube.cubeStyle = CubeStyle.Corner;
+				cube.cubestyle = CubeStyle.Corner;
 				break;
 			case 13:
-				cube.cubeStyle = CubeStyle.None;
+				cube.cubestyle = CubeStyle.None;
 				break;
 			case 4:
 			case 10:
@@ -92,7 +113,7 @@ public class MyMagicCube : MonoBehaviour
 			case 14:
 			case 16:
 			case 22:
-				cube.cubeStyle = CubeStyle.Face;
+				cube.cubestyle = CubeStyle.Face;
 				break;
 			case 1:
 			case 3:
@@ -106,7 +127,7 @@ public class MyMagicCube : MonoBehaviour
 			case 21:
 			case 23:
 			case 25:
-				cube.cubeStyle = CubeStyle.Edge;
+				cube.cubestyle = CubeStyle.Edge;
 				break;
 			}
 
@@ -160,8 +181,14 @@ public class MyMagicCube : MonoBehaviour
 
 			obj.transform.localScale = Vector3.one * singlecubesize;
 			obj.name = "Face" + i.ToString ("D2");
+
+			cubefaces [i].cube = singlecubes [l];
 		}
 	}
+
+	#endregion
+
+	#region SetColor
 
 	// set original color
 	IEnumerator SetFullColor ()
@@ -174,59 +201,95 @@ public class MyMagicCube : MonoBehaviour
 		yield return null;
 	}
 
-
 	public void SetEditColor ()
 	{
-		SingleBox[] boxes = FindObjectsOfType <SingleBox> ();
-		foreach (SingleBox b in boxes) {
-			b.InitColor ();
-		}
-		// 设置编辑颜色的初始颜色
-		MagicCubeOperate opetarer = FindObjectOfType <MagicCubeOperate> ();
-		SingleBoxPiece[] pieces = FindObjectsOfType <SingleBoxPiece> ();
-		foreach (SingleBoxPiece p in pieces) {
-			if (Mathf.Abs (p.transform.position.x) < 1.25f &&
-			    Mathf.Abs (p.transform.position.y) < 1.25f &&
-			    Mathf.Abs (p.transform.position.z) < 1.25f) {
-				p.GetComponent <MeshRenderer> ().material.color = new Color (0f, 0f, 0f, 0.5f);
-				p.enabled = false;
+		EditColorStore.Clear ();
+		EditColorStore.Add (MagicColor.White, 0);
+		EditColorStore.Add (MagicColor.Red, 0);
+		EditColorStore.Add (MagicColor.Yellow, 0);
+		EditColorStore.Add (MagicColor.Green, 0);
+		EditColorStore.Add (MagicColor.Blue, 0);
+		EditColorStore.Add (MagicColor.Orange, 0);
+		EditColorStore.Add (MagicColor.None, 0);
+
+		curColor = MagicColor.None;
+		for (int i = 0; i < cubefaces.Length; i++) {
+			if (cubefaces [i].cube.cubestyle.Equals (CubeStyle.Face)) {
+				cubefaces [i].UpdateFaceStyle ();
+				cubefaces [i].SetDefaultColor ();
 			} else {
-				SingleBox sb = p.GetComponentInParent <SingleBox> ();
-				if (sb.myStyle.Equals (CubeStyle.Face)) {
-					if (p.transform.position.x >= 1.25f) {
-						opetarer.PickColor (MagicColor.Green);
-						sb.SetColor (p.gameObject);
-					} else if (p.transform.position.x <= -1.25f) {
-						opetarer.PickColor (MagicColor.Blue);
-						sb.SetColor (p.gameObject);
-					} else if (p.transform.position.y >= 1.25f) {
-						opetarer.PickColor (MagicColor.Yellow);
-						sb.SetColor (p.gameObject);
-					} else if (p.transform.position.y <= -1.25f) {
-						opetarer.PickColor (MagicColor.White);
-						sb.SetColor (p.gameObject);
-					} else if (p.transform.position.z <= -1.25f) {
-						opetarer.PickColor (MagicColor.Red);
-						sb.SetColor (p.gameObject);
-					} else if (p.transform.position.z >= 1.25f) {
-						opetarer.PickColor (MagicColor.Orange);
-						sb.SetColor (p.gameObject);
-					}
-				}
+				cubefaces [i].SetEditColor (MagicColor.None);
 			}
+		}
+	}
+
+	// 拾取颜色
+	public void PickColor (MagicColor col)
+	{
+		curColor = col;
+		print (curColor);
+	}
+
+	// 因为增加的颜色必然是当前的颜色，所以不需要参数了
+	public void ColorAdd ()
+	{
+		//      print ("新添颜色：" + curColor);
+		if (curColor != MagicColor.None)
+			EditColorStore [curColor] += 1;
+	}
+
+	public void ColorDelete (MagicColor color)
+	{
+		if (color != MagicColor.None)
+			EditColorStore [color] -= 1;
+	}
+
+	public void ColorMapAdd (SingleCube cube, CubeMark mark)
+	{
+		EditColorMap.Add (cube, mark);
+		if (CheakEditColorFinished ()) {
+			print ("颜色编辑完成！！！！！！！！");
 		}
 
 	}
 
+	public void ColorMapDelete (SingleCube cube)
+	{
+		EditColorMap.Remove (cube);
+	}
+
+	bool CheakEditColorFinished ()
+	{
+		bool finished = true;
+		foreach (MagicColor c in EditColorStore.Keys) {
+			if (c != MagicColor.None) {
+				if (EditColorStore [c] != 8) {
+					finished = false;
+				}
+				break;
+			}
+		}
+		if (finished) {
+			// 1. 清空字典
+			if (EditColorMap.Count < 20) {
+				finished = false;
+			}
+			// 2. 清除数据
+			foreach (SingleCube s in EditColorMap.Keys) {
+				if (EditColorMap [s] == CubeMark.None) {
+					finished = false;
+					break;
+				}
+			}
+		}
+		return finished;
+	}
+
+	#endregion
+
 	// for test
 	void OnGUI ()
 	{
-		if (Input.GetKeyDown (KeyCode.A)) {
-			StartCoroutine (SetFullColor ());
-		}
-		if (Input.GetKeyDown (KeyCode.Q)) {
-			SetEditColor ();
-		}
 
 		if (GUILayout.Button ("DoMyFormula")) {
 			StartCoroutine (DoFormula ());
@@ -255,14 +318,20 @@ public class MyMagicCube : MonoBehaviour
 		GUILayout.Label ("\t\t\t" + bstr);
 	}
 
-
-
-
-
 	// Update is called once per frame
 	void Update ()
 	{
-		#region For Test
+		if (Input.GetKeyDown (KeyCode.A)) {
+			StartCoroutine (SetFullColor ());
+			print ("aaaaa");
+
+		}
+
+		if (Input.GetKeyDown (KeyCode.Q)) {
+			SetEditColor ();
+			print ("QQQQQ");
+		}
+		#region For Test (getkeydown)
 
 		if (Input.GetKeyDown (KeyCode.L) && !rotating) {
 			if (Input.GetKey (KeyCode.LeftAlt)) {
@@ -383,7 +452,51 @@ public class MyMagicCube : MonoBehaviour
 		#endregion
 	}
 
+	#region Control
 
+	public void SwitchState (State state)
+	{
+		this.mystate = state;
+		switch (mystate) {
+		case State.Operate:
+			StartCoroutine (SetFullColor ());
+			break;
+		case State.EditColor:
+			print ("<><>");
+			// 1. 清空字典
+			EditColorMap.Clear ();
+			// 2. 清除数据
+//			foreach (SingleCube s in EditColorMap.Keys) {
+//				EditColorMap [s] = CubeMark.None;
+//			}
+			print ("<><>");
+//			EditColorStore.Clear ();
+//			EditColorStore.Add (MagicColor.White, 0);
+//			EditColorStore.Add (MagicColor.Red, 0);
+//			EditColorStore.Add (MagicColor.Yellow, 0);
+//			EditColorStore.Add (MagicColor.Green, 0);
+//			EditColorStore.Add (MagicColor.Blue, 0);
+//			EditColorStore.Add (MagicColor.Orange, 0);
+//			EditColorStore.Add (MagicColor.None, 0);
+			SetEditColor ();
+//			foreach (MagicColor c in EditColorStore.Keys) {
+//				EditColorStore [c] = 0;
+//			}
+			print ("<><>");
+			foreach (SingleCube sc in singlecubes) {
+				sc.CleanCubeColor ();
+			}
+			break;
+		case State.EditFormula:
+			StartCoroutine (SetFullColor ());
+			break;
+		case State.OperateAndFormula:
+			break;
+		}
+
+	}
+
+	#endregion
 
 	#region AutoOperate or PressButtonAndAnimation
 
@@ -475,6 +588,9 @@ public class MyMagicCube : MonoBehaviour
 			DoZP2 ();
 			break;
 		}
+		print ("~~~~~~~~" + step);
+		// 每走一步进行一次判断。
+		CheckAcomplished ();
 	}
 
 	#region SlngleStep 标准单步操作
@@ -883,10 +999,18 @@ public class MyMagicCube : MonoBehaviour
 			b.AdjustPos ();
 		}
 
+		foreach (CubeFace f in cubefaces) {
+			f.UpdateFaceStyle ();
+		}
+
+		CheckAcomplished ();
+
 		rotating = false;
 	}
 
 	#endregion
+
+	#region DoRotate Animate
 
 	IEnumerator RotateAnimation (List<SingleCube> olist, Vector3 point, Vector3 axis, float angle, float length)
 	{
@@ -918,13 +1042,18 @@ public class MyMagicCube : MonoBehaviour
 		foreach (SingleCube b in olist) {
 			b.AdjustPos ();
 		}
+
+		foreach (CubeFace f in cubefaces) {
+			f.UpdateFaceStyle ();
+		}
+
+		CheckAcomplished ();
 		rotating = false;
 	}
 
 	// Find operate suit. 找到当前操作的块儿组
 	void GetOperateSuit (OperateSuit str)
 	{
-		
 		switch (str) {
 		case OperateSuit.Left:
 			operatelist.Clear ();
@@ -1007,19 +1136,14 @@ public class MyMagicCube : MonoBehaviour
 		}
 	}
 
-	// 拾取颜色
-	public void PickColor (MagicColor col)
-	{
-		curColor = col;
-	}
+	#endregion
 
+	#region Edit Formular
 
 	public string formula = "";
 	public Text formulatext;
 
 	public float spacetime = 1f;
-
-
 
 	OperateStep GetString2Step (string val)
 	{
@@ -1033,8 +1157,6 @@ public class MyMagicCube : MonoBehaviour
 		return step;
 	}
 
-	#region Edit Formular
-
 	public void FormularAdd (OperateStep onestep)
 	{
 		if (MyMapPrefab.Step2StringMap.ContainsKey (onestep)) {
@@ -1042,7 +1164,7 @@ public class MyMagicCube : MonoBehaviour
 				formula += MyMapPrefab.Step2StringMap [onestep];
 			} else {
 
-				char[] charSeparator = new char[] { ',' };
+				char[] charSeparator = { ',' };
 				string[] l = formula.Split (charSeparator, System.StringSplitOptions.RemoveEmptyEntries);
 
 				// 获得上一步存储的步骤序号
@@ -1099,12 +1221,9 @@ public class MyMagicCube : MonoBehaviour
 		List<string> mysteps = new List<string> ();
 
 		string context = formula;
-		char[] charSeparator = new char[] { ',' };
+		char[] charSeparator = { ',' };
 		string[] l = context.Split (charSeparator, System.StringSplitOptions.RemoveEmptyEntries);
 		mysteps.AddRange (l);
-//		for (int i = 0; i < l.Length; i++) {
-//			mysteps.Add (l [i]);
-//		}
 
 		while (!string.IsNullOrEmpty (formula) && mysteps.Count > 0) {
 			if (this.Stop) {
@@ -1142,7 +1261,9 @@ public class MyMagicCube : MonoBehaviour
 
 		for (int i = 0; i < lf;) {
 			int cs = Random.Range (0, 18);
-			if ((int)(cs / 3) != (int)(si / 3)) {
+			// 防止出现前后左右上下互不影响的操作
+			if (cs / 6 != si / 6) {
+//			if ((int)(cs / 3) != (int)(si / 3)) {
 				si = cs;
 
 				OperateStep onestep = (OperateStep)cs;
@@ -1170,4 +1291,23 @@ public class MyMagicCube : MonoBehaviour
 
 	#endregion
 
+
+	void CheckAcomplished ()
+	{
+		bool finished = true;
+		accomplishstate.Clear ();
+		for (int i = 0; i < cubefaces.Length; i++) {
+			if (accomplishstate.ContainsKey (cubefaces [i].facestyle)) {
+				if (accomplishstate [cubefaces [i].facestyle] != cubefaces [i].mycolor) {
+					finished = false;
+					break;
+				}
+			} else {
+				accomplishstate.Add (cubefaces [i].facestyle, cubefaces [i].mycolor);
+			}
+		}
+		if (finished) {
+			print ("finished!!!!!!!!");
+		}
+	}
 }

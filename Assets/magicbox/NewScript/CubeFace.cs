@@ -12,6 +12,8 @@ public class CubeFace : MonoBehaviour
 
 	public CubeFaceStyle facestyle = CubeFaceStyle.None;
 
+	public MagicColor mycolor;
+
 	void Start ()
 	{
 		operater = FindObjectOfType <MyMagicCube> ();
@@ -39,7 +41,7 @@ public class CubeFace : MonoBehaviour
 			}
 			break;																																																																																																																																																																																																																																																																								
 		case State.EditColor:
-			if (!cube.cubeStyle.Equals (CubeStyle.Face)) {
+			if (!cube.cubestyle.Equals (CubeStyle.Face)) {
 				cube.SetColor (this.gameObject);
 			}
 			break;
@@ -49,29 +51,36 @@ public class CubeFace : MonoBehaviour
 	// 根据位置来设置面片的颜色，适用于自动重新设置魔方颜色
 	public void SetDefaultColor ()
 	{
+		this.mycolor = MyMapPrefab.StyleColorMap [facestyle];
 		this.GetComponent <MeshRenderer> ().material.color = MyMapPrefab.ColorMap [MyMapPrefab.StyleColorMap [facestyle]];
 	}
+
 	// 用户自定义编辑颜色（添加颜色之后应该同步修改块儿的记录）（编辑颜色要判断颜色的个数是否过多和组合是否重复）
 	public void SetEditColor (MagicColor pickedcolor)
 	{
+		operater.ColorDelete (mycolor);
 		this.GetComponent <MeshRenderer> ().material.color = MyMapPrefab.ColorMap [pickedcolor];
+		mycolor = pickedcolor;
+		operater.ColorAdd ();
+
+		cube.SetColor (this.gameObject);
 	}
 
 	public void UpdateFaceStyle ()
 	{
 		Vector3 pos = transform.position;
-		if (pos.x > 1.25f) {
-			this.facestyle = CubeFaceStyle.Right;
-		} else if (pos.x < -1.25f) {
-			this.facestyle = CubeFaceStyle.Left;
+		if (pos.x < -1.25f) {
+			this.facestyle = CubeFaceStyle.Front;
+		} else if (pos.x > 1.25f) {
+			this.facestyle = CubeFaceStyle.Back;
 		} else if (pos.y > 1.25f) {
 			this.facestyle = CubeFaceStyle.Up;
 		} else if (pos.y < -1.25f) {
 			this.facestyle = CubeFaceStyle.Down;
 		} else if (pos.z < -1.25f) {
-			this.facestyle = CubeFaceStyle.Front;
+			this.facestyle = CubeFaceStyle.Right;
 		} else if (pos.z > 1.25f) {
-			this.facestyle = CubeFaceStyle.Back;
+			this.facestyle = CubeFaceStyle.Left;
 		} else {
 			this.facestyle = CubeFaceStyle.None;
 		}

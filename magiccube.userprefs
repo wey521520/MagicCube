@@ -12,29 +12,13 @@
       <File FileName="Assets/magicbox/Script/MyEnum.cs" Line="1" Column="1" />
       <File FileName="Assets/magicbox/Script/SingleBox.cs" Line="1" Column="1" />
       <File FileName="Assets/magicbox/Script/SingleBoxPiece.cs" Line="1" Column="1" />
-      <File FileName="Assets/magicbox/NewScript/MyMagicCube.cs" Line="1301" Column="49" />
+      <File FileName="Assets/magicbox/NewScript/MyMagicCube.cs" Line="354" Column="3" />
       <File FileName="Assets/magicbox/NewScript/SingleCube.cs" Line="1" Column="1" />
-      <File FileName="Assets/magicbox/NewScript/CubeFace.cs" Line="69" Column="29" />
-      <File FileName="Assets/magicbox/Script/MyMapPrefab.cs" Line="4" Column="1" />
+      <File FileName="Assets/magicbox/NewScript/CubeFace.cs" Line="1" Column="1" />
+      <File FileName="Assets/magicbox/Script/MyMapPrefab.cs" Line="10" Column="2" />
       <File FileName="Assets/MyGUI.cs" Line="1" Column="1" />
       <File FileName="Assets/StateButton.cs" Line="1" Column="1" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State name="__root__">
-          <Node name="magiccube" expanded="True">
-            <Node name="Assembly-CSharp" expanded="True">
-              <Node name="magicbox" expanded="True">
-                <Node name="NewScript" expanded="True">
-                  <Node name="MyMagicCube.cs" selected="True" />
-                </Node>
-                <Node name="Script" expanded="True" />
-              </Node>
-            </Node>
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

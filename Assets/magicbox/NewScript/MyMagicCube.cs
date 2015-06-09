@@ -25,6 +25,8 @@ public class MyMagicCube : MonoBehaviour
 
 	private bool rotating;
 
+	private bool flipping;
+
 	public bool Stop{ get { return !rotating; } }
 
 	private bool judged;
@@ -33,6 +35,16 @@ public class MyMagicCube : MonoBehaviour
 	private float rlength;
 
 	List<SingleCube> operatelist = new List<SingleCube> ();
+
+	//是否正在执行公式，正在执行公式时不可以对魔方进行操作。
+	private bool formularing;
+
+	// 以后魔方的操作分为两种模式，一种拖拽操作，另外一种公式操作，
+	// 两种操作方式都需要记录用户的操作步骤，
+	// 增加功能，回放我的操作，除非用户重新开始，否则用户的操作不会被用户主动清除。
+	// 增加功能，精简公式，精简自己的操作，判断是否有重复无用的操作。
+
+	// 用户编辑公式的时候是不需要记录的，因为编辑完成的公式就是记录。
 
 	#endregion
 
@@ -316,6 +328,14 @@ public class MyMagicCube : MonoBehaviour
 		}
 		GUILayout.Label ("\t\t\t" + astr);
 		GUILayout.Label ("\t\t\t" + bstr);
+		GUILayout.Label ("\t\t\t" + userrecord);
+		Vector2 v2 = Vector2.zero;
+		// 二指或以上操作，并且没有判定为转动和运行公式
+		if (Input.touchCount > 1 && !judged && !flipping) {
+			v2 = Input.mousePosition;
+			StartCoroutine (FlipMagicBox (v2));
+		}
+		GUILayout.Label ("鼠标位置：" + v2);
 	}
 
 	// Update is called once per frame
@@ -331,9 +351,26 @@ public class MyMagicCube : MonoBehaviour
 			SetEditColor ();
 			print ("QQQQQ");
 		}
+
+//		if (Input.GetKeyDown (KeyCode.W)) {
+//			CreatLevel (Random.Range (1, 8));
+//			print ("wwww");
+//		}
+
+		if (formularing || rotating) {
+			return;
+		}
+
+		// 二指或以上操作，并且没有判定为转动和运行公式
+//		if (Input.touchCount > 1 && !judged) {
+//			if (Input.mousePosition) {
+//				
+//			}
+//		}
+
 		#region For Test (getkeydown)
 
-		if (Input.GetKeyDown (KeyCode.L) && !rotating) {
+		if (Input.GetKeyDown (KeyCode.L)) {
 			if (Input.GetKey (KeyCode.LeftAlt)) {
 				DoLP2 ();
 				FormularAdd (OperateStep.L2);
@@ -346,7 +383,7 @@ public class MyMagicCube : MonoBehaviour
 			}
 		}
 
-		if (Input.GetKeyDown (KeyCode.R) && !rotating) {
+		if (Input.GetKeyDown (KeyCode.R)) {
 			if (Input.GetKey (KeyCode.LeftAlt)) {
 				DoRP2 ();
 				FormularAdd (OperateStep.R2);
@@ -359,7 +396,7 @@ public class MyMagicCube : MonoBehaviour
 			}
 		}
 
-		if (Input.GetKeyDown (KeyCode.U) && !rotating) {
+		if (Input.GetKeyDown (KeyCode.U)) {
 			if (Input.GetKey (KeyCode.LeftAlt)) {
 				DoUP2 ();
 				FormularAdd (OperateStep.U2);
@@ -372,7 +409,7 @@ public class MyMagicCube : MonoBehaviour
 			}
 		}
 
-		if (Input.GetKeyDown (KeyCode.D) && !rotating) {
+		if (Input.GetKeyDown (KeyCode.D)) {
 			if (Input.GetKey (KeyCode.LeftAlt)) {
 				DoDP2 ();
 				FormularAdd (OperateStep.D2);
@@ -385,7 +422,7 @@ public class MyMagicCube : MonoBehaviour
 			}
 		}
 
-		if (Input.GetKeyDown (KeyCode.F) && !rotating) {
+		if (Input.GetKeyDown (KeyCode.F)) {
 			if (Input.GetKey (KeyCode.LeftAlt)) {
 				DoFP2 ();
 				FormularAdd (OperateStep.F2);
@@ -398,7 +435,7 @@ public class MyMagicCube : MonoBehaviour
 			}
 		}
 
-		if (Input.GetKeyDown (KeyCode.B) && !rotating) {
+		if (Input.GetKeyDown (KeyCode.B)) {
 			if (Input.GetKey (KeyCode.LeftAlt)) {
 				DoBP2 ();
 				FormularAdd (OperateStep.B2);
@@ -411,7 +448,7 @@ public class MyMagicCube : MonoBehaviour
 			}
 		}
 
-		if (Input.GetKeyDown (KeyCode.X) && !rotating) {
+		if (Input.GetKeyDown (KeyCode.X)) {
 			if (Input.GetKey (KeyCode.LeftAlt)) {
 				DoXP2 ();
 				FormularAdd (OperateStep.X2);
@@ -424,7 +461,7 @@ public class MyMagicCube : MonoBehaviour
 			}
 		}
 
-		if (Input.GetKeyDown (KeyCode.Y) && !rotating) {
+		if (Input.GetKeyDown (KeyCode.Y)) {
 			if (Input.GetKey (KeyCode.LeftAlt)) {
 				DoYP2 ();
 				FormularAdd (OperateStep.Y2);
@@ -437,7 +474,7 @@ public class MyMagicCube : MonoBehaviour
 			}
 		}
 
-		if (Input.GetKeyDown (KeyCode.Z) && !rotating) {
+		if (Input.GetKeyDown (KeyCode.Z)) {
 			if (Input.GetKey (KeyCode.LeftAlt)) {
 				DoZP2 ();
 				FormularAdd (OperateStep.Z2);
@@ -602,6 +639,7 @@ public class MyMagicCube : MonoBehaviour
 	{
 		GetOperateSuit (OperateSuit.Left);
 		StartCoroutine (RotateAnimation (operatelist, Vector3.zero, Vector3.forward, 90f, singleanitime));
+
 	}
 
 	//L2
@@ -833,182 +871,378 @@ public class MyMagicCube : MonoBehaviour
 	public void ManualOperate (OperatePiece piece, Vector3 pos, GameObject singleboxobj)
 	{
 		//		curobj = singleboxobj;
+		if (formularing || rotating || judged) {
+			print ("?????????????");
+			return;
+		}
+		print ("?88888888888");
 		StartCoroutine (DoJudge (piece, pos));
 	}
 
 	// Judge the actual operate step
 	IEnumerator DoJudge (OperatePiece piece, Vector3 pos)
 	{
-		rotating = true;
+		// 判断是否操作魔方
 		Vector2 startpos = Input.mousePosition;
 		Vector2 curpos = Input.mousePosition;
-		judged = false;
-		while (Input.GetMouseButton (0) && !judged) {
+		//judged = false;
+		while (Input.GetMouseButton (0) && !judged && Input.touchCount.Equals (0)) {
 			curpos = Input.mousePosition;
 			if (Vector2.Distance (curpos, startpos) >= 10f) {
 				judged = true;
-				//print ("judged");
 			}
 			yield return null;
 		}
-		// 记录转动的角度
-		float rollangle = 0f;
-		Vector2 lastmousepos = Input.mousePosition;
-		Vector2 offset = Vector2.zero;
-		float stepangle = 0f;
 
-		Vector3 direction = Vector3.up;
-		int suit = 0;
+		if (judged) {
+			rotating = true;
+			
+			// 记录转动的角度
+			float rollangle = 0f;
+			Vector2 lastmousepos = Input.mousePosition;
+			Vector2 offset = Vector2.zero;
+			float stepangle = 0f;
 
-		switch (piece) {
-		case OperatePiece.Left:
-			if (Mathf.Abs (curpos.y - startpos.y) >= Mathf.Abs (curpos.x - startpos.x) * 1.4f) {
-				//Slide up and down (alike x axis)
-				if (pos.z < -0.5f) {
-					GetOperateSuit (OperateSuit.Right);
-				} else if (pos.z < 0.5f) {
-					GetOperateSuit (OperateSuit.MiddleZ);
+			Vector3 direction = Vector3.up;
+			int suit = 0;
+
+			string CS = "";
+
+			switch (piece) {
+			case OperatePiece.Left:
+				if (Mathf.Abs (curpos.y - startpos.y) >= Mathf.Abs (curpos.x - startpos.x) * 1.4f) {
+					//Slide up and down (alike x axis)
+					if (pos.z < -0.5f) {
+						GetOperateSuit (OperateSuit.Right);
+						CS += "R";
+					} else if (pos.z < 0.5f) {
+						GetOperateSuit (OperateSuit.MiddleZ);
+						CS += "MZ";
+					} else {
+						GetOperateSuit (OperateSuit.Left);
+						CS += "L";
+					}
+					direction = Vector3.back;
+					suit = 1;
 				} else {
-					GetOperateSuit (OperateSuit.Left);
+					//Slide left and right (alike y axis)
+					if (pos.y < -0.5f) {
+						GetOperateSuit (OperateSuit.Down);
+						CS += "D";
+					} else if (pos.y < 0.5f) {
+						GetOperateSuit (OperateSuit.MiddleY);
+						CS += "MY";
+					} else {
+						GetOperateSuit (OperateSuit.Up);
+						CS += "U";
+					}
+					direction = Vector3.down;
+					suit = 2;
 				}
-				direction = Vector3.back;
-				suit = 1;
-			} else {
-				//Slide left and right (alike y axis)
-				if (pos.y < -0.5f) {
-					GetOperateSuit (OperateSuit.Down);
-				} else if (pos.y < 0.5f) {
-					GetOperateSuit (OperateSuit.MiddleY);
+				break;
+			case OperatePiece.Right:
+				if (Mathf.Abs (curpos.y - startpos.y) >= Mathf.Abs (curpos.x - startpos.x) * 1.4f) {
+					//Slide up and down (alike z axis)
+					if (pos.x < -0.5f) {
+						GetOperateSuit (OperateSuit.Front);
+						CS += "F";
+					} else if (pos.x < 0.5f) {
+						GetOperateSuit (OperateSuit.MiddleX);
+						CS += "MX";
+					} else {
+						GetOperateSuit (OperateSuit.Back);
+						CS += "B";
+					}
+					direction = Vector3.right;
+					suit = 1;
 				} else {
-					GetOperateSuit (OperateSuit.Up);
+					//Slide left and right (alike y axis)
+					if (pos.y < -0.5f) {
+						GetOperateSuit (OperateSuit.Down);
+						CS += "D";
+					} else if (pos.y < 0.5f) {
+						GetOperateSuit (OperateSuit.MiddleY);
+						CS += "MY";
+					} else {
+						GetOperateSuit (OperateSuit.Up);
+						CS += "U";
+					}
+					direction = Vector3.down;
+					suit = 2;
 				}
-				direction = Vector3.down;
-				suit = 2;
+				break;
+			case OperatePiece.Top:
+				if ((curpos.y - startpos.y) * (curpos.x - startpos.x) >= 0f) {
+					//Slide alike x axis
+					if (pos.z < -0.5f) {
+						GetOperateSuit (OperateSuit.Right);
+						CS += "R";
+					} else if (pos.z < 0.5f) {
+						GetOperateSuit (OperateSuit.MiddleZ);
+						CS += "MZ";
+					} else {
+						GetOperateSuit (OperateSuit.Left);
+						CS += "L";
+					}
+					direction = Vector3.back;
+					suit = 2;
+				} else {
+					//Slide alike z axis
+					if (pos.x < -0.5f) {
+						GetOperateSuit (OperateSuit.Front);
+						CS += "F";
+					} else if (pos.x < 0.5f) {
+						GetOperateSuit (OperateSuit.MiddleX);
+						CS += "MX";
+					} else {
+						GetOperateSuit (OperateSuit.Back);
+						CS += "B";
+					}
+					direction = Vector3.left;
+					suit = 3;
+				}
+				break;
 			}
-			break;
-		case OperatePiece.Right:
-			if (Mathf.Abs (curpos.y - startpos.y) >= Mathf.Abs (curpos.x - startpos.x) * 1.4f) {
-				//Slide up and down (alike z axis)
-				if (pos.x < -0.5f) {
-					GetOperateSuit (OperateSuit.Front);
-				} else if (pos.x < 0.5f) {
-					GetOperateSuit (OperateSuit.MiddleX);
-				} else {
-					GetOperateSuit (OperateSuit.Back);
-				}
-				direction = Vector3.right;
-				suit = 1;
-			} else {
-				//Slide left and right (alike y axis)
-				if (pos.y < -0.5f) {
-					GetOperateSuit (OperateSuit.Down);
-				} else if (pos.y < 0.5f) {
-					GetOperateSuit (OperateSuit.MiddleY);
-				} else {
-					GetOperateSuit (OperateSuit.Up);
-				}
-				direction = Vector3.down;
-				suit = 2;
-			}
-			break;
-		case OperatePiece.Top:
-			if ((curpos.y - startpos.y) * (curpos.x - startpos.x) >= 0f) {
-				//Slide alike x axis
-				if (pos.z < -0.5f) {
-					GetOperateSuit (OperateSuit.Right);
-				} else if (pos.z < 0.5f) {
-					GetOperateSuit (OperateSuit.MiddleZ);
-				} else {
-					GetOperateSuit (OperateSuit.Left);
-				}
-				direction = Vector3.back;
-				suit = 2;
-			} else {
-				//Slide alike z axis
-				if (pos.x < -0.5f) {
-					GetOperateSuit (OperateSuit.Front);
-				} else if (pos.x < 0.5f) {
-					GetOperateSuit (OperateSuit.MiddleX);
-				} else {
-					GetOperateSuit (OperateSuit.Back);
-				}
-				direction = Vector3.left;
-				suit = 3;
-			}
-			break;
-		}
 
-		while (Input.GetMouseButton (0)) {
-			offset = new Vector2 (Input.mousePosition.x - lastmousepos.x, Input.mousePosition.y - lastmousepos.y);
+			while (Input.GetMouseButton (0) && Input.touchCount == 1) {
+				offset = new Vector2 (Input.mousePosition.x - lastmousepos.x, Input.mousePosition.y - lastmousepos.y);
+				// 根据位置和滑动的方向来对魔方对应的层进行操作
+				if (suit.Equals (1)) {
+					stepangle = offset.y * rlength;
+				} else if (suit.Equals (2)) {
+					stepangle = (offset.x * 0.86f + offset.y * 0.25f) * rlength;
+				} else if (suit.Equals (3)) {
+					stepangle = (offset.x * 0.86f - offset.y * 0.25f) * rlength;
+				}
 
-			if (suit.Equals (1)) {
-				stepangle = offset.y * rlength;
-			} else if (suit.Equals (2)) {
-				stepangle = (offset.x * 0.86f + offset.y * 0.25f) * rlength;
-			} else if (suit.Equals (3)) {
-				stepangle = (offset.x * 0.86f - offset.y * 0.25f) * rlength;
+				rollangle += stepangle;
+				foreach (SingleCube b in operatelist) {
+					b.transform.RotateAround (Vector3.zero, direction, stepangle);
+				}
+				lastmousepos = Input.mousePosition;
+				print ("rotating");
+				yield return null;
 			}
 
-			rollangle += stepangle;
+			float targetangle = 0f;
+			int manstep = 0;
+			if (rollangle > 0) {
+				manstep = (int)((rollangle + 45f) / 90f);
+			} else if (rollangle < 0) {
+				manstep = (int)((rollangle - 45f) / 90f);
+			}
+			targetangle = manstep * 90f;
+
+			manstep %= 4;
+			manstep = manstep < 0 ? manstep + 4 : manstep;
+			if (!manstep.Equals (0)) {
+				// 由于朝向问题，所以对立面的公式是不同的。
+				if (CS.Equals ("U") || CS.Equals ("L") || CS.Equals ("F")) {
+					if (manstep == 2) {
+						CS += "2";
+					} else if (manstep == 1) {
+						CS += "'";
+					}
+				} else if (CS.Equals ("D") || CS.Equals ("R") || CS.Equals ("B")) {
+					if (manstep == 2) {
+						CS += "2";
+					} else if (manstep == 3) {
+						CS += "'";
+					}
+				}
+				//print (manstep + "\t:\t" + CS);
+				RecordUserOperate (CS);
+			}
+
+			float offsetangle = targetangle - rollangle;
+
+			float speed = 90f / singleanitime;
+			//		bool toupper = true;
+			if (offsetangle < 0) {
+				//			toupper = false;
+				speed *= -1f;
+			}
+
+			bool finished = false;
+
+			float curoffsetangle = 0f;
+			float lastoffsetangle = 0f;
+			float truthoffsetangle = 0f;
+
+			while (!finished) {
+				float o = speed * Time.deltaTime;
+				curoffsetangle += o;
+				if (Mathf.Abs (curoffsetangle) > Mathf.Abs (offsetangle)) {
+					curoffsetangle = offsetangle;
+					finished = true;
+					//print ("Finished!!!!!!!");
+				}
+				truthoffsetangle = curoffsetangle - lastoffsetangle;
+				foreach (SingleCube b in operatelist) {
+					b.transform.RotateAround (Vector3.zero, direction, truthoffsetangle);
+				}
+				lastoffsetangle = curoffsetangle;
+				yield return null;
+			}
+
 			foreach (SingleCube b in operatelist) {
-				b.transform.RotateAround (Vector3.zero, direction, stepangle);
+				b.AdjustPos ();
 			}
-			lastmousepos = Input.mousePosition;
-			yield return null;
-		}
 
-		float targetangle = 0f;
-		if (rollangle > 0) {
-			targetangle = ((int)((rollangle + 45f) / 90f)) * 90f;
-		} else if (rollangle < 0) {
-			targetangle = ((int)((rollangle - 45f) / 90f)) * 90f;
-		}
-
-		float offsetangle = targetangle - rollangle;
-
-		float speed = 90f / singleanitime;
-		//		bool toupper = true;
-		if (offsetangle < 0) {
-			//			toupper = false;
-			speed *= -1f;
-		}
-
-		bool finished = false;
-
-		float curoffsetangle = 0f;
-		float lastoffsetangle = 0f;
-		float truthoffsetangle = 0f;
-
-		while (!finished) {
-			float o = speed * Time.deltaTime;
-			curoffsetangle += o;
-			if (Mathf.Abs (curoffsetangle) > Mathf.Abs (offsetangle)) {
-				curoffsetangle = offsetangle;
-				finished = true;
-				//print ("Finished!!!!!!!");
+			foreach (CubeFace f in cubefaces) {
+				f.UpdateFaceStyle ();
 			}
-			truthoffsetangle = curoffsetangle - lastoffsetangle;
-			foreach (SingleCube b in operatelist) {
-				b.transform.RotateAround (Vector3.zero, direction, truthoffsetangle);
-			}
-			lastoffsetangle = curoffsetangle;
-			yield return null;
+
+			CheckAcomplished ();
+
+			rotating = false;
 		}
-
-		foreach (SingleCube b in operatelist) {
-			b.AdjustPos ();
-		}
-
-		foreach (CubeFace f in cubefaces) {
-			f.UpdateFaceStyle ();
-		}
-
-		CheckAcomplished ();
-
-		rotating = false;
+		judged = false;
 	}
 
 	#endregion
+
+	#region 整体旋转魔方
+
+	IEnumerator FlipMagicBox (Vector2 originalpos)
+	{
+		int dir = 0;
+		string CS = "";
+		Vector3 direction = Vector3.zero;
+		Vector2 multiplepos = Input.mousePosition;
+		while (Input.touchCount > 1 && !judged) {
+			multiplepos = Input.mousePosition;
+			if (Vector2.Distance (multiplepos, originalpos) >= 10f) {
+				judged = true;
+				if (Mathf.Abs (multiplepos.x - originalpos.x) >= Mathf.Abs (multiplepos.y - originalpos.y)) {
+					dir = 1;
+					CS += "Y";
+					direction = Vector3.down;
+				} else {
+					dir = 2;
+					if (multiplepos.x >= Screen.width / 2) {
+						CS += "Z";
+						direction = Vector3.right;
+					} else {
+						CS += "X";
+						direction = Vector3.back;
+					}
+				}
+			}
+			yield return null;
+		}
+		if (judged) {
+			rotating = true;
+			GetOperateSuit (OperateSuit.Entriety);
+
+			// 记录转动的角度
+			float rollangle = 0f;
+
+			Vector2 lastpos = multiplepos;
+
+			float offset = 0f;
+			while (Input.touchCount > 1) {
+				multiplepos = Input.mousePosition;
+				if (dir.Equals (1)) {
+					// 左右转动Y轴
+					offset = multiplepos.x - lastpos.x;
+				} else if (dir.Equals (2)) {
+					// 上下转动XZ轴
+					offset = multiplepos.y - lastpos.y;
+				}
+				offset *= rlength;
+				foreach (SingleCube b in operatelist) {
+					b.transform.RotateAround (Vector3.zero, direction, offset);
+				}
+//					offset *= rlength;
+//					if (originalpos.x >= Screen.width / 2) {
+//						foreach (SingleCube b in operatelist) {
+//							b.transform.RotateAround (Vector3.zero, Vector3.right, offset);
+//						}
+//					} else {
+//						foreach (SingleCube b in operatelist) {
+//							b.transform.RotateAround (Vector3.zero, Vector3.back, offset);
+//						}
+//					}
+//				}
+				rollangle += offset;
+				//print ("flipping" + lastpos + multiplepos);
+				lastpos = multiplepos;
+				yield return null;
+			}
+
+			float targetangle = 0f;
+			int manstep = 0;
+			if (rollangle > 0) {
+				manstep = (int)((rollangle + 45f) / 90f);
+			} else if (rollangle < 0) {
+				manstep = (int)((rollangle - 45f) / 90f);
+			}
+			targetangle = manstep * 90f;
+
+			manstep %= 4;
+			manstep = manstep < 0 ? manstep + 4 : manstep;
+			if (!manstep.Equals (0)) {
+				// 由于朝向问题，所以对立面的公式是不同的。
+				if (CS.Equals ("Y") || CS.Equals ("Z")) {
+					if (manstep == 2) {
+						CS += "2";
+					} else if (manstep == 1) {
+						CS += "'";
+					}
+				} else if (CS.Equals ("X")) {
+					if (manstep == 2) {
+						CS += "2";
+					} else if (manstep == 3) {
+						CS += "'";
+					}
+				}
+				RecordUserOperate (CS);
+			}
+
+			float offsetangle = targetangle - rollangle;
+
+			float speed = 90f / singleanitime;
+			if (offsetangle < 0) {
+				speed *= -1f;
+			}
+
+			bool finished = false;
+
+			float curoffsetangle = 0f;
+			float lastoffsetangle = 0f;
+			float truthoffsetangle = 0f;
+
+			while (!finished) {
+				float o = speed * Time.deltaTime;
+				curoffsetangle += o;
+				if (Mathf.Abs (curoffsetangle) > Mathf.Abs (offsetangle)) {
+					curoffsetangle = offsetangle;
+					finished = true;
+				}
+				truthoffsetangle = curoffsetangle - lastoffsetangle;
+				foreach (SingleCube b in operatelist) {
+					b.transform.RotateAround (Vector3.zero, direction, truthoffsetangle);
+				}
+				lastoffsetangle = curoffsetangle;
+				yield return null;
+			}
+
+			foreach (SingleCube b in operatelist) {
+				b.AdjustPos ();
+			}
+
+			foreach (CubeFace f in cubefaces) {
+				f.UpdateFaceStyle ();
+			}
+
+			rotating = false;
+		}
+		judged = false;
+	}
+
+	#endregion
+
 
 	#region DoRotate Animate
 
@@ -1192,8 +1426,9 @@ public class MyMagicCube : MonoBehaviour
 				}
 			}
 		}
-		if (formulatext != null)
+		if (formulatext != null) {
 			formulatext.text = formula;
+		}
 	}
 
 	public void FormularDelete ()
@@ -1218,6 +1453,7 @@ public class MyMagicCube : MonoBehaviour
 
 	IEnumerator DoFormula ()
 	{
+		formularing = true;
 		List<string> mysteps = new List<string> ();
 
 		string context = formula;
@@ -1226,7 +1462,7 @@ public class MyMagicCube : MonoBehaviour
 		mysteps.AddRange (l);
 
 		while (!string.IsNullOrEmpty (formula) && mysteps.Count > 0) {
-			if (this.Stop) {
+			if (!rotating) {
 				// 等待1秒，如果是新手，应该多加等待
 				yield return new WaitForSeconds (spacetime);
 				// 找到map的第一个公式
@@ -1245,6 +1481,7 @@ public class MyMagicCube : MonoBehaviour
 				formulatext.text = formula;
 			yield return null;
 		}
+		formularing = false;
 	}
 
 
@@ -1289,25 +1526,149 @@ public class MyMagicCube : MonoBehaviour
 		bstr = fr;
 	}
 
+	// 记录用户的所有操作步骤。
+	private string userrecord;
+
+	void RecordUserOperate (string ustep)
+	{
+		if (string.IsNullOrEmpty (userrecord)) {
+			userrecord = ustep;
+		} else {
+			userrecord = userrecord + "," + ustep;
+		}
+	}
+
+	// 在每次重新开始，或者编辑颜色，切换关卡的时候
+	void CleanUserOperate ()
+	{
+		userrecord = "";
+	}
+
+	void CombineTheUserOperate ()
+	{
+		
+	}
+
 	#endregion
 
-
+	// 检查是否完成还原
 	void CheckAcomplished ()
 	{
 		bool finished = true;
 		accomplishstate.Clear ();
 		for (int i = 0; i < cubefaces.Length; i++) {
-			if (accomplishstate.ContainsKey (cubefaces [i].facestyle)) {
-				if (accomplishstate [cubefaces [i].facestyle] != cubefaces [i].mycolor) {
-					finished = false;
-					break;
+			if (cubefaces [i].mycolor != MagicColor.None) {
+				if (accomplishstate.ContainsKey (cubefaces [i].facestyle)) {
+					if (accomplishstate [cubefaces [i].facestyle] != cubefaces [i].mycolor) {
+						finished = false;
+						break;
+					}
+				} else {
+					accomplishstate.Add (cubefaces [i].facestyle, cubefaces [i].mycolor);
 				}
-			} else {
-				accomplishstate.Add (cubefaces [i].facestyle, cubefaces [i].mycolor);
 			}
 		}
 		if (finished) {
 			print ("finished!!!!!!!!");
 		}
+	}
+
+	// 先生成完成时的状态，然后以程序随机打乱
+	void CreatLevel (int l)
+	{
+		SetEditColor ();
+		switch (l) {
+		case 1:
+			//level1 第一层的棱块
+			// 取最上面一层为操作层，需要显示的块的颜色为最上面一层的十字和对应的邻面
+			foreach (CubeFace cf in cubefaces) {
+				if (cf.transform.position.y > 1.25 * singlecubesize &&
+				    (Mathf.Abs (cf.transform.position.x) < 0.25 * singlecubesize || Mathf.Abs (cf.transform.position.z) < 0.25 * singlecubesize)) {
+					cf.UpdateFaceStyle ();
+					cf.SetDefaultColor ();
+				} else if ((cf.transform.position.y > 0.75 * singlecubesize && cf.transform.position.y < 1.75 * singlecubesize) &&
+				           (Mathf.Abs (cf.transform.position.x) < 0.25 * singlecubesize || Mathf.Abs (cf.transform.position.z) < 0.25 * singlecubesize)) {
+					cf.UpdateFaceStyle ();
+					cf.SetDefaultColor ();
+				}
+			}
+			break;
+		case 2:
+			//level2 第一层
+			// 取最上面一层为操作层，需要显示的块的颜色为最上面一层和对应的邻面
+			foreach (CubeFace cf in cubefaces) {
+				if (cf.transform.position.y > 0.5 * singlecubesize) {
+					cf.UpdateFaceStyle ();
+					cf.SetDefaultColor ();
+				}
+			}
+			break;
+		case 3:
+			//level3 第二层
+			// 取最上面两层为操作层，需要显示的块的颜色为最上面两层的所有面
+			foreach (CubeFace cf in cubefaces) {
+				if (cf.transform.position.y > -0.5 * singlecubesize) {
+					cf.UpdateFaceStyle ();
+					cf.SetDefaultColor ();
+				}
+			}
+			break;
+		case 4:
+			//level4 下两层和顶面的十字
+			// 需要显示的块的颜色为下面两层的所有面和顶面的十字
+			foreach (CubeFace cf in cubefaces) {
+				if (cf.transform.position.y < 0.5 * singlecubesize) {
+					cf.UpdateFaceStyle ();
+					cf.SetDefaultColor ();
+				} else if (cf.transform.position.y > 1.25 * singlecubesize &&
+				           (Mathf.Abs (cf.transform.position.x) < 0.25 * singlecubesize || Mathf.Abs (cf.transform.position.z) < 0.25 * singlecubesize)) {
+					cf.UpdateFaceStyle ();
+					cf.SetDefaultColor ();
+				}
+			}
+			break;
+		case 5:
+			//level5 下两层和顶面
+			// 需要显示的块的颜色为下面两层的所有面和顶面
+			foreach (CubeFace cf in cubefaces) {
+				if (cf.transform.position.y < 0.5 * singlecubesize) {
+					cf.UpdateFaceStyle ();
+					cf.SetDefaultColor ();
+				} else if (cf.transform.position.y > 1.25 * singlecubesize) {
+					cf.UpdateFaceStyle ();
+					cf.SetDefaultColor ();
+				}
+			}
+			break;
+		case 6:
+			//level6 下两层和顶面以及四个角块
+			// 需要显示的块的颜色为下面两层的所有面和顶面以及四个角块对应的面
+			foreach (CubeFace cf in cubefaces) {
+				if (cf.transform.position.y < 0.5 * singlecubesize) {
+					cf.UpdateFaceStyle ();
+					cf.SetDefaultColor ();
+				} else if (cf.transform.position.y > 1.25 * singlecubesize) {
+					cf.UpdateFaceStyle ();
+					cf.SetDefaultColor ();
+				} else if ((cf.transform.position.y > 0.5 * singlecubesize && cf.transform.position.y < 1.25 * singlecubesize) &&
+				           !(Mathf.Abs (cf.transform.position.x) < 0.25 * singlecubesize || Mathf.Abs (cf.transform.position.z) < 0.25 * singlecubesize)) {
+					cf.UpdateFaceStyle ();
+					cf.SetDefaultColor ();
+				}
+			}
+			break;
+		case 7:
+			//level7 全部解决
+			SetFullColor ();
+			break;
+		}
+		CreatBrokeFormula ();
+		formula = astr;
+		DoMyFormula ();
+	}
+
+	void SingleRecoverFomularExercise ()
+	{
+		
 	}
 }

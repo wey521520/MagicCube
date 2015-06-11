@@ -27,9 +27,10 @@ public class MyMagicCube : MonoBehaviour
 
 	private bool flipping;
 
-	public bool Stop{ get { return !rotating; } }
+	public bool Stop{ get { return !rotating && !flipping; } }
 
-	private bool judged;
+	private bool rotatejudged;
+	private bool flipjudged;
 
 	public  float singleanitime = 0.4f;
 	private float rlength;
@@ -331,7 +332,7 @@ public class MyMagicCube : MonoBehaviour
 		GUILayout.Label ("\t\t\t" + userrecord);
 		Vector2 v2 = Vector2.zero;
 		// 二指或以上操作，并且没有判定为转动和运行公式
-		if (Input.touchCount > 1 && !judged && !flipping) {
+		if (Input.touchCount > 1 && !rotatejudged && !flipjudged && !flipping && !rotating) {
 			v2 = Input.mousePosition;
 			StartCoroutine (FlipMagicBox (v2));
 		}
@@ -871,7 +872,7 @@ public class MyMagicCube : MonoBehaviour
 	public void ManualOperate (OperatePiece piece, Vector3 pos, GameObject singleboxobj)
 	{
 		//		curobj = singleboxobj;
-		if (formularing || rotating || judged) {
+		if (formularing || rotating || rotatejudged || flipjudged || flipping) {
 			print ("?????????????");
 			return;
 		}
@@ -885,16 +886,30 @@ public class MyMagicCube : MonoBehaviour
 		// 判断是否操作魔方
 		Vector2 startpos = Input.mousePosition;
 		Vector2 curpos = Input.mousePosition;
-		//judged = false;
-		while (Input.GetMouseButton (0) && !judged && Input.touchCount.Equals (0)) {
+
+//		#if UNITY_EDITOR
+//		while (Input.GetMouseButton (0) && !rotatejudged) {
+//			curpos = Input.mousePosition;
+//			if (Vector2.Distance (curpos, startpos) >= 10f) {
+//				rotatejudged = true;
+//			}
+//			yield return null;
+//		}
+//		#endif
+
+//		#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+		while (!rotatejudged && Input.touchCount.Equals (1)) {
 			curpos = Input.mousePosition;
 			if (Vector2.Distance (curpos, startpos) >= 10f) {
-				judged = true;
+				rotatejudged = true;
 			}
 			yield return null;
 		}
+//		#endif
 
-		if (judged) {
+		print ("==========");
+
+		if (rotatejudged) {
 			rotating = true;
 			
 			// 记录转动的角度
@@ -1004,7 +1019,30 @@ public class MyMagicCube : MonoBehaviour
 				break;
 			}
 
-			while (Input.GetMouseButton (0) && Input.touchCount == 1) {
+//			#if UNITY_EDITOR
+//			while (Input.GetMouseButton (0)) {
+//				offset = new Vector2 (Input.mousePosition.x - lastmousepos.x, Input.mousePosition.y - lastmousepos.y);
+//				// 根据位置和滑动的方向来对魔方对应的层进行操作
+//				if (suit.Equals (1)) {
+//					stepangle = offset.y * rlength;
+//				} else if (suit.Equals (2)) {
+//					stepangle = (offset.x * 0.86f + offset.y * 0.25f) * rlength;
+//				} else if (suit.Equals (3)) {
+//					stepangle = (offset.x * 0.86f - offset.y * 0.25f) * rlength;
+//				}
+//
+//				rollangle += stepangle;
+//				foreach (SingleCube b in operatelist) {
+//					b.transform.RotateAround (Vector3.zero, direction, stepangle);
+//				}
+//				lastmousepos = Input.mousePosition;
+//				print ("rotating1");
+//				yield return null;
+//			}
+//			#endif
+
+//			#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+			while (Input.touchCount == 1) {
 				offset = new Vector2 (Input.mousePosition.x - lastmousepos.x, Input.mousePosition.y - lastmousepos.y);
 				// 根据位置和滑动的方向来对魔方对应的层进行操作
 				if (suit.Equals (1)) {
@@ -1014,15 +1052,16 @@ public class MyMagicCube : MonoBehaviour
 				} else if (suit.Equals (3)) {
 					stepangle = (offset.x * 0.86f - offset.y * 0.25f) * rlength;
 				}
-
+			
 				rollangle += stepangle;
 				foreach (SingleCube b in operatelist) {
 					b.transform.RotateAround (Vector3.zero, direction, stepangle);
 				}
 				lastmousepos = Input.mousePosition;
-				print ("rotating");
+				print ("rotating2");
 				yield return null;
 			}
+//			#endif
 
 			float targetangle = 0f;
 			int manstep = 0;
@@ -1050,7 +1089,6 @@ public class MyMagicCube : MonoBehaviour
 						CS += "'";
 					}
 				}
-				//print (manstep + "\t:\t" + CS);
 				RecordUserOperate (CS);
 			}
 
@@ -1085,6 +1123,7 @@ public class MyMagicCube : MonoBehaviour
 				yield return null;
 			}
 
+
 			foreach (SingleCube b in operatelist) {
 				b.AdjustPos ();
 			}
@@ -1097,7 +1136,8 @@ public class MyMagicCube : MonoBehaviour
 
 			rotating = false;
 		}
-		judged = false;
+		print ("==========4");
+		rotatejudged = false;
 	}
 
 	#endregion
@@ -1110,10 +1150,10 @@ public class MyMagicCube : MonoBehaviour
 		string CS = "";
 		Vector3 direction = Vector3.zero;
 		Vector2 multiplepos = Input.mousePosition;
-		while (Input.touchCount > 1 && !judged) {
+		while (Input.touchCount > 1 && !flipjudged) {
 			multiplepos = Input.mousePosition;
 			if (Vector2.Distance (multiplepos, originalpos) >= 10f) {
-				judged = true;
+				flipjudged = true;
 				if (Mathf.Abs (multiplepos.x - originalpos.x) >= Mathf.Abs (multiplepos.y - originalpos.y)) {
 					dir = 1;
 					CS += "Y";
@@ -1131,8 +1171,8 @@ public class MyMagicCube : MonoBehaviour
 			}
 			yield return null;
 		}
-		if (judged) {
-			rotating = true;
+		if (flipjudged) {
+			flipping = true;
 			GetOperateSuit (OperateSuit.Entriety);
 
 			// 记录转动的角度
@@ -1154,17 +1194,6 @@ public class MyMagicCube : MonoBehaviour
 				foreach (SingleCube b in operatelist) {
 					b.transform.RotateAround (Vector3.zero, direction, offset);
 				}
-//					offset *= rlength;
-//					if (originalpos.x >= Screen.width / 2) {
-//						foreach (SingleCube b in operatelist) {
-//							b.transform.RotateAround (Vector3.zero, Vector3.right, offset);
-//						}
-//					} else {
-//						foreach (SingleCube b in operatelist) {
-//							b.transform.RotateAround (Vector3.zero, Vector3.back, offset);
-//						}
-//					}
-//				}
 				rollangle += offset;
 				//print ("flipping" + lastpos + multiplepos);
 				lastpos = multiplepos;
@@ -1236,9 +1265,9 @@ public class MyMagicCube : MonoBehaviour
 				f.UpdateFaceStyle ();
 			}
 
-			rotating = false;
+			flipping = false;
 		}
-		judged = false;
+		flipjudged = false;
 	}
 
 	#endregion
